@@ -25,7 +25,7 @@ public:
 	}
 
 	template<typename T>
-	void WriteBits(T t, int useLSBcount = sizeof(T))
+	void WriteBits(T t, int useLSBcount = sizeof(T) * 8)
 	{
 		T t2 = t;
 		for (int i = 0; i < useLSBcount; i++)
@@ -91,7 +91,7 @@ public:
 	}
 
 	template<typename T>
-	T ReadBits(int useLSBcount = sizeof(T))
+	T ReadBits(int useLSBcount = sizeof(T) * 8)
 	{
 		T t = 0;
 		for (int i = 0; i < useLSBcount; i++)

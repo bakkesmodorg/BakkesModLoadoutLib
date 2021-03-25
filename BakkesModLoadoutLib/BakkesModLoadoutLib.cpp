@@ -194,6 +194,7 @@ BMLoadout load(std::string loadoutString)
 	if (loadout.body.blue_is_orange) //User has same loadout for both teams
 	{
 		loadout.body.orange_loadout = loadout.body.blue_loadout;
+		loadout.body.orange_wheel_team_id = loadout.body.blue_wheel_team_id;
 	}
 	else {
 		loadout.body.orange_loadout = read_items_from_buffer(reader);
@@ -337,7 +338,7 @@ int main()
 	customLoadout.body.orange_loadout[SLOT_BODY] = { SLOT_BODY, 23, PAINT_CRIMSON }; //Equip crimson octane body
 	customLoadout.body.orange_loadout[SLOT_SKIN] = { SLOT_SKIN, 3239, PAINT_TITANIUMWHITE }; //Equip TW mainframe
 	customLoadout.body.orange_loadout[SLOT_WHEELS] = { SLOT_WHEELS, 4122, PAINT_NONE }; //Equip Apex esports wheel
-	customLoadout.body.orange_wheel_team_id = 20;
+	customLoadout.body.orange_wheel_team_id = 20; // Spacestation gaming
 	customLoadout.body.orange_loadout[SLOT_HAT] = { SLOT_HAT, 2960, PAINT_NONE }; //Equip birthday hat
 	customLoadout.body.orange_loadout[SLOT_ANTHEM] = { SLOT_ANTHEM, 5721, PAINT_NONE }; //Equip Flip Reset anthem
 

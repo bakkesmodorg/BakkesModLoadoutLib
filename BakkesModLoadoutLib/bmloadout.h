@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <map>
 
-#define CURRENT_LOADOUT_VERSION 2
+#define CURRENT_LOADOUT_VERSION 3
 
 struct Header
 {
@@ -36,9 +36,11 @@ struct Body
 {
 	bool blue_is_orange = true;
 	std::map<uint8_t, Item> blue_loadout;
+	uint8_t blue_wheel_team_id;
 	OverrideColor blueColor;
 	std::map<uint8_t, Item> orange_loadout;
 	OverrideColor orangeColor;
+	uint8_t orange_wheel_team_id;
 };
 
 struct BMLoadout

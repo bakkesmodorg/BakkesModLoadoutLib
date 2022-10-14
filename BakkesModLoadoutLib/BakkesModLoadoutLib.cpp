@@ -95,7 +95,7 @@ void print_loadout(BMLoadout loadout)
 	std::cout << std::endl << std::endl;
 }
 
-std::map<uint8_t, Item> read_items_from_buffer(BitBinaryReader<unsigned char>& reader)
+std::map<uint8_t, Item> read_items_from_buffer(BitBinaryReader<unsigned char>& reader, const int loadoutVersion)
 {
 	std::map<uint8_t, Item> items;
 	int itemsSize = reader.ReadBits<int>(4); //Read the length of the item array
@@ -108,7 +108,7 @@ std::map<uint8_t, Item> read_items_from_buffer(BitBinaryReader<unsigned char>& r
 	{
 		Item option;
 		int slotIndex = reader.ReadBits<int>(5); //Read slot of item
-		int productId = reader.ReadBits<int>(13); //Read product ID
+		int productId = reader.ReadBits<int>(loadoutVersion >= 4 ? 16 : 13); //Read product ID
 		bool isPaintable = reader.ReadBool(); //Read whether item is paintable or not
 
 		if (isPaintable)
@@ -176,7 +176,7 @@ BMLoadout load(std::string loadoutString)
 	//At this point we know the input string is probably correct, time to parse the body
 
 	loadout.body.blue_is_orange = reader.ReadBool(); //Read single bit indicating whether blue = orange
-	loadout.body.blue_loadout = read_items_from_buffer(reader); //Read loadout
+	loadout.body.blue_loadout = read_items_from_buffer(reader, loadout.header.version); //Read loadout
 
 	loadout.body.blueColor.should_override = reader.ReadBool(); //Read whether custom colors is on
 	if (loadout.body.blueColor.should_override) {
@@ -197,7 +197,7 @@ BMLoadout load(std::string loadoutString)
 		loadout.body.orange_wheel_team_id = loadout.body.blue_wheel_team_id;
 	}
 	else {
-		loadout.body.orange_loadout = read_items_from_buffer(reader);
+		loadout.body.orange_loadout = read_items_from_buffer(reader, loadout.header.version);
 		loadout.body.orangeColor.should_override = reader.ReadBool(); //Read whether custom colors is on
 		if (loadout.body.blueColor.should_override) {
 			/* Read rgb for primary colors (0-255)*/
@@ -232,7 +232,7 @@ void write_loadout(BitBinaryWriter<unsigned char>& writer, std::map<uint8_t, Ite
 			continue;
 		loadoutSize++;
 		writer.WriteBits(opt.first, 5); //Slot index, 5 bits so we get slot upto 31
-		writer.WriteBits(opt.second.product_id, 13); //Item id, 13 bits so upto 8191 should be enough
+		writer.WriteBits(opt.second.product_id, 16); //Item id, 13 bits so upto 8191 should be enough (Note: it wasnt, now 16 bits (since RL2.21, loadout v4))
 		writer.WriteBool(opt.second.paint_index > 0); //Bool indicating whether item is paintable or not
 		if (opt.second.paint_index > 0) //If paintable
 		{
@@ -306,12 +306,21 @@ std::string save(BMLoadout loadout)
 
 int main()
 {
-	std::string myCode = "AwtFClyAjKh6BghADgD5Y/0HXv7//z8KXIBBOGUZoQEVyEVmWSfhtgEAACg=";
+	{
+		//Loadout v3 test
+		std::string myCode = "AwtFClyAjKh6BghADgD5Y/0HXv7//z8KXIBBOGUZoQEVyEVmWSfhtgEAACg=";
 
-	//Loadout loading test
-	BMLoadout loadout = load(myCode);
-	print_loadout(loadout);
+		//Loadout loading test
+		BMLoadout loadout = load(myCode);
+		print_loadout(loadout);
+	}
 
+	{
+		//Loadout v4 test
+		std::string myCode = "hAMwB1wABMItCGEWAAA=";
+		BMLoadout loadout = load(myCode);
+		print_loadout(loadout);
+	}
 	/*
 	Create new loadout, leave header empty as the save() function takes care of it
 	*/

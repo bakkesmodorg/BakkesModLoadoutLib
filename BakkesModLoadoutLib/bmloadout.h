@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <map>
 
-#define CURRENT_LOADOUT_VERSION 3
+#define CURRENT_LOADOUT_VERSION 4
 
 struct Header
 {
